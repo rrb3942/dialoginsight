@@ -14,7 +14,7 @@ import (
 )
 
 type Config struct {
-	ListenAddr     string        `default:"127.0.0.1:10337" usage:"Local IP and port for the prometheus exporter to listen on." flag:"listen"`
+	ListenAddr     string        `default:"127.0.0.1:10337" usage:"Local IP and port for the prometheus exporter to listen on." flag:"listen" json:"listen"`
 	OpensipsMI     string        `default:"http://127.0.0.1:8888/mi" usage:"url to the mi_http instance for opensips." flag:"opensips_mi" json:"opensips_mi"`
 	ExportAll      bool          `default:"true" usage:"Whether or not to export all dialog profiles from the instance." flag:"export_all" json:"export_all"`
 	ExportProfiles []string      `usage:"List of Insight dialog profiles to export. Used if export_all is set to false."`
