@@ -7,6 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -48,7 +49,16 @@ func main() {
 
 	log.Println("Listening on", cfg.ListenAddr)
 
-	go log.Fatalf("ListenAndServe error: %v", http.ListenAndServe(cfg.ListenAddr, promhttp.Handler()))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	mux.Handle("/metrics", promhttp.Handler())
+	mux.Handle("/metrics/", promhttp.Handler())
+
+	go log.Fatalf("ListenAndServe error: %v", http.ListenAndServe(cfg.ListenAddr, mux))
 
 	//Wait on Signals
 	signals := make(chan os.Signal, 10)

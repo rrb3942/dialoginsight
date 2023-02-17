@@ -2,7 +2,7 @@
 dialoginsight allows you to export dialog profiles from [OpenSIPs](https://opensips.org) as [Prometheus](https://prometheus.io/) style metrics.
 
 ## Features ##
-* Supports OpenSIPs 3.2+ via the [mi_http module](https://opensips.org/docs/modules/3.2.x/mi_http.html) and JSON-RPC 2.0
+* Supports OpenSIPs 3.2+ via the [mi_http](https://opensips.org/docs/modules/3.2.x/mi_http.html) module and JSON-RPC 2.0
 * Export all dialog profiles or only a specific list
 * Ability to use dynamic metric labels on the exported metrics from the OpenSIPs script.
 
@@ -44,7 +44,7 @@ Will be exported as:
 	dialoginsight_exported_profile_customer_dialogs{value="1234"} 1
 
 ## Insight ##
-Adding insight to the exported metrics allows you to increase visibility into active calls.
+Adding insight to the exported profiles allows you to increase visibility into active calls.
 
 ### Insight Values ###
 Insight values are profile values that start with `insight_label` followed by a `:` and a series of `label=value` pairs separated by `;`
@@ -52,7 +52,7 @@ Insight values are profile values that start with `insight_label` followed by a 
 `label` must follow Prometheus conventions and match the pattern of `'^[a-zA-Z_][a-zA-Z0-9_]*'`
 * If a `label` is not valid the `label=value` pair will be silently dropped
 
-`value` may be any valid UTF-8 character, except `';'`
+`value` may contain any valid UTF-8 character, except `';'`
 
 Example format:
 
@@ -97,4 +97,4 @@ One way to limit cardinality is to use less combinations of labels in a single m
 	set_dlg_profile("tracking", "insight: cust=1234;carrier=4567")
 	set_dlg_profile("cust_called_state", "insight: cust=1234;called_state=NY")
 	set_dlg_profile("carrier_called_state", "insight: carrier=4567;called_state=NY")
-Our potential unique combinations is 20,000 ((100\*100) + (100\*50) + (100\*50)). You lose granularity in exchange for reduced cardinality.
+Our potential unique combinations is greatly reduced to 20,000 ((100\*100) + (100\*50) + (100\*50)). You lose granularity in exchange for reduced cardinality.
