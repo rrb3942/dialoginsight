@@ -11,13 +11,14 @@ Configuration is done via a json config file (typically /etc/dialogsight/config.
 
 ## Configuration Settings ##
 These may be used as command line flags or as fields in the json configuration.
-* `listen` - Local IP and port for the prometheus exporter to listen on. (default "127.0.0.1:10337")
+* `listen` - Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://ListenAddr/metrics (default "127.0.0.1:10337"
 * `opensips_mi` - URL to the mi_http instance for opensips. (default "http://127.0.0.1:8888/mi")
 * `export_all` - Whether or not to export all dialog profiles from the instance. (default "true")
 * `export_profiles` - List of dialog profiles to export. Used if export_all is set to false.
 * `insight_label` - Dialog value starting prefix to indicate it is an insight value (contains labels to process). (default "insight")
 * `timeout` - Timeout duration for opensips API requests. (default "2s")
 * `idle_remove` - If a metric is idle for this long it will be removed from memory. (default "1m")
+* `enable_profiling` - Enables access to profiling via http://ListenAddr/debug/pprof/ (default "false")
 
 ## Additional Flags ##
 * `-config` - Allows specifying the configuration file to use.
