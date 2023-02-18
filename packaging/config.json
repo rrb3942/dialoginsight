@@ -1,0 +1,10 @@
+{
+	"listen": "127.0.0.1:10337",
+	"opensips_mi": "http://127.0.0.2:8888/mi",
+	"insight_label": "insight",
+	"export_profiles": [],
+	"export_all": true,
+	"timeout": "3s",
+	"idle_remove": "1m",
+	"enable_profiling": false
+}

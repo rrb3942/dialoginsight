@@ -1,0 +1,17 @@
+[Unit]
+Description=Dialog Profile exporting to prometheus for OpenSIPs
+After=network-online.target
+
+[Service]
+User=dialoginsight
+Group=dialoginsight
+LimitNOFILE=8192
+Environment="OPTIONS=-config /etc/dialoginsight/config.json"
+ExecStart=/usr/bin/dialoginsight $OPTIONS
+KillMode=control-group
+Restart=always
+RestartSec=10
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target
