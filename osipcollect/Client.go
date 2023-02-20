@@ -23,6 +23,7 @@ type Client struct {
 }
 
 func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
+	client = new(Client)
 	client.url = url
 	client.insightPrefix = insightPrefix + ":"
 	client.timeout = timeout
