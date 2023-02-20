@@ -11,7 +11,7 @@ import (
 )
 
 // Prometheus labels can only contain these values.
-const promLabelStart = "abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ"
+const promLabelStart = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const promLabelSet = promLabelStart + "_0123456789"
 
 // bytemap lets us easily check if a label only contains valid characters.
