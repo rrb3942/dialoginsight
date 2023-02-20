@@ -5,10 +5,13 @@ import (
 )
 
 // Structs for deserializing API calls to opensips.
+//
+//nolint:tagliatelle // Casing is determined by the API
 type ProfilesWrapper struct {
 	Profiles []Profiles `json:"Profiles"`
 }
 
+//nolint:tagliatelle // Casing is determined by the API
 type Profiles struct {
 	Name     string `json:"name"`
 	HasValue bool   `json:"has value"`

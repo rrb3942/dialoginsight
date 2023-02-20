@@ -15,6 +15,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+const (
+	signalBuffer = 10
+)
+
 type Config struct {
 	ListenAddr      string        `default:"127.0.0.1:10337" usage:"Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://ListenAddr/metrics" flag:"listen" json:"listen"`
 	OpensipsMI      string        `default:"http://127.0.0.1:8888/mi" usage:"URL to the mi_http instance for opensips." flag:"opensips_mi" json:"opensips_mi"`
@@ -60,6 +64,7 @@ func main() {
 		mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
+
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.Handle("/metrics/", promhttp.Handler())
 
@@ -72,7 +77,7 @@ func main() {
 	go log.Fatalf("ListenAndServe error: %v", server.ListenAndServe())
 
 	// Wait on Signals
-	signals := make(chan os.Signal, 10)
+	signals := make(chan os.Signal, signalBuffer)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	<-signals

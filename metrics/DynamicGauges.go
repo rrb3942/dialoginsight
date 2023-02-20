@@ -25,6 +25,7 @@ func NewDynamicGauges(namespacePrefix, metricName, help string, idleCleanup time
 	dyng.namespaces = make(map[string]*DynamicLabelGauges)
 	dyng.lastActive = make(map[string]time.Time)
 	dyng.idleCleanup = idleCleanup
+
 	return dyng
 }
 
@@ -69,6 +70,7 @@ func (dyng *DynamicGauges) SetWithLabels(namespace string, labels Labels, value 
 	}
 
 	g.Set(labels, value)
+
 	dyng.lastActive[namespace] = dyng.now
 }
 

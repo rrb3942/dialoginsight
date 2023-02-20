@@ -15,6 +15,7 @@ type ProfileValue struct {
 	Count int    `json:"count"`
 }
 
+//nolint:tagliatelle // Casing is determined by the API
 type ProfileSizeWrapper struct {
 	Profile ProfileSize `json:"Profile"`
 }

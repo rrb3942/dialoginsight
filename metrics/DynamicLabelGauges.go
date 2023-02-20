@@ -26,6 +26,7 @@ func NewDynamicLabelGauges(namespace, metricName, help string, idleCleanup time.
 	dyng.gauges = make(map[string]*prometheus.GaugeVec)
 	dyng.lastActive = make(map[string]time.Time)
 	dyng.idleCleanup = idleCleanup
+
 	return dyng
 }
 
@@ -71,6 +72,7 @@ func (dyng *DynamicLabelGauges) Set(labels Labels, value float64) {
 	}
 
 	g.With(prometheus.Labels(labels)).Set(value)
+
 	dyng.lastActive[mapKey] = dyng.now
 }
 

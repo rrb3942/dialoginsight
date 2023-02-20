@@ -29,6 +29,7 @@ func (l Labels) MapKey() string {
 
 	keys := maps.Keys(l)
 	sort.Strings(keys)
+
 	return strings.Join(keys, ";")
 }
 

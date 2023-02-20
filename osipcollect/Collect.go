@@ -17,19 +17,29 @@ const (
 // Collects and provides metrics.
 func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 	// Only allow one collect to run at a time
-	osip.Lock()
-	defer osip.Unlock()
+	osip.mu.Lock()
+	defer osip.mu.Unlock()
 
 	osip.exportProfiles.Reset()
 	osip.exportValueProfiles.Reset()
 	osip.insightProfiles.Reset()
 
+	if err := osip.setProfiles(); err != nil {
+		log.Println(err)
+		return
+	}
+
+	osip.exportProfiles.Collect(ch)
+	osip.exportValueProfiles.Collect(ch)
+	osip.insightProfiles.Collect(ch)
+}
+
+func (osip *Client) setProfiles() error {
 	// API Call to opensips to get list of profiles
 	profiles, err := osip.GetProfileList()
 
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
 	for _, profile := range profiles {
@@ -37,40 +47,44 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 			// Dialog with values handling
 			if profile.HasValue {
 				// Fetch all values associated with the the profile
-				if vprofile, err := osip.GetProfileWithValues(profile.Name); err != nil {
+				vprofile, err := osip.GetProfileWithValues(profile.Name)
+				if err != nil {
 					// ProfileNotFound is safe to continue on
 					// May be cause by a profile going away between us querying the list and checking
-					if !profileNotFound(err) {
-						log.Println(err)
-						return
+					if profileNotFound(err) {
+						continue
 					}
-				} else {
-					for _, value := range vprofile {
-						// Is this an insight value?
-						if strings.HasPrefix(value.Value, osip.insightPrefix) {
-							osip.insightProfiles.SetWithStrLabels(profile.Name, strings.TrimSpace(value.Value[len(osip.insightPrefix):]), float64(value.Count))
-						} else {
-							osip.exportValueProfiles.SetWithLabels(profile.Name, metrics.Labels{"value": value.Value}, float64(value.Count))
-						}
-					}
+
+					return err
 				}
-				// Non-Value dialogs
+
+				for _, value := range vprofile {
+					// Is this an insight value?
+					if strings.HasPrefix(value.Value, osip.insightPrefix) {
+						osip.insightProfiles.SetWithStrLabels(profile.Name, strings.TrimSpace(value.Value[len(osip.insightPrefix):]), float64(value.Count))
+						continue
+					}
+
+					osip.exportValueProfiles.SetWithLabels(profile.Name, metrics.Labels{"value": value.Value}, float64(value.Count))
+				}
 			} else {
-				if size, err := osip.GetProfileSize(profile.Name); err != nil {
-					if !profileNotFound(err) {
-						log.Println(err)
-						return
+				// Non-Value dialogs
+				size, err := osip.GetProfileSize(profile.Name)
+
+				if err != nil {
+					if profileNotFound(err) {
+						continue
 					}
-				} else {
-					osip.exportProfiles.Set(profile.Name, float64(size))
+
+					return err
 				}
+
+				osip.exportProfiles.Set(profile.Name, float64(size))
 			}
 		}
 	}
 
-	osip.exportProfiles.Collect(ch)
-	osip.exportValueProfiles.Collect(ch)
-	osip.insightProfiles.Collect(ch)
+	return nil
 }
 
 // Implement Promeheus Collector Interface

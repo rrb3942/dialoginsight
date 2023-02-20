@@ -18,13 +18,11 @@ type Client struct {
 	url                 string
 	insightPrefix       string
 	timeout             time.Duration
-	sync.Mutex
-	exportAll bool
+	mu                  sync.Mutex
+	exportAll           bool
 }
 
-func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (*Client, error) {
-	client := new(Client)
-
+func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
 	client.url = url
 	client.insightPrefix = insightPrefix + ":"
 	client.timeout = timeout
@@ -43,10 +41,9 @@ func NewClient(url, insightPrefix string, exportProfiles []string, exportAll boo
 	ctx, cancel := context.WithTimeout(context.Background(), client.timeout)
 	defer cancel()
 
-	if rpcClient, err := rpc.DialContext(ctx, url); err != nil {
+	client.rpc, err = rpc.DialContext(ctx, url)
+	if err != nil {
 		return nil, err
-	} else {
-		client.rpc = rpcClient
 	}
 
 	return client, nil
