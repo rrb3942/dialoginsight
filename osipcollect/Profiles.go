@@ -19,7 +19,8 @@ type Profiles struct {
 func (osip *Client) GetProfileList() ([]Profiles, error) {
 	profiles := ProfilesWrapper{}
 
-	ctx, _ := context.WithTimeout(context.Background(), osip.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), osip.timeout)
+	defer cancel()
 
 	if err := osip.rpc.CallContext(ctx, &profiles, "list_all_profiles"); err != nil {
 		return nil, err

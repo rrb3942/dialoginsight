@@ -39,7 +39,8 @@ func NewClient(url, insightPrefix string, exportProfiles []string, exportAll boo
 
 	client.exportAll = exportAll
 
-	ctx, _ := context.WithTimeout(context.Background(), client.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), client.timeout)
+	defer cancel()
 
 	if rpcClient, err := rpc.DialContext(ctx, url); err != nil {
 		return nil, err

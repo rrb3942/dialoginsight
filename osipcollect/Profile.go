@@ -29,7 +29,8 @@ type ProfileSize struct {
 func (osip *Client) GetProfileWithValues(profile string) ([]ProfileValue, error) {
 	profiles := []ProfileValue{}
 
-	ctx, _ := context.WithTimeout(context.Background(), osip.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), osip.timeout)
+	defer cancel()
 
 	if err := osip.rpc.CallContext(ctx, &profiles, "profile_get_values", profile); err != nil {
 		return nil, err
@@ -43,7 +44,8 @@ func (osip *Client) GetProfileWithValues(profile string) ([]ProfileValue, error)
 func (osip *Client) GetProfileSize(profile string) (int, error) {
 	size := ProfileSizeWrapper{}
 
-	ctx, _ := context.WithTimeout(context.Background(), osip.timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), osip.timeout)
+	defer cancel()
 
 	if err := osip.rpc.CallContext(ctx, &size, "profile_get_size", profile); err != nil {
 		return 0, err

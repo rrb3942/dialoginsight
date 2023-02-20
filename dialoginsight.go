@@ -62,7 +62,13 @@ func main() {
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.Handle("/metrics/", promhttp.Handler())
 
-	go log.Fatalf("ListenAndServe error: %v", http.ListenAndServe(cfg.ListenAddr, mux))
+	server := &http.Server{
+		Addr:              cfg.ListenAddr,
+		Handler:           mux,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	go log.Fatalf("ListenAndServe error: %v", server.ListenAndServe())
 
 	//Wait on Signals
 	signals := make(chan os.Signal, 10)
