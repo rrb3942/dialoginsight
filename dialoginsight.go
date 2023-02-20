@@ -70,7 +70,7 @@ func main() {
 
 	go log.Fatalf("ListenAndServe error: %v", server.ListenAndServe())
 
-	//Wait on Signals
+	// Wait on Signals
 	signals := make(chan os.Signal, 10)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 

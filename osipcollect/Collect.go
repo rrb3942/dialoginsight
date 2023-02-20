@@ -15,7 +15,7 @@ const (
 // Implement Promeheus Collector Interface
 // Collects and provides metrics
 func (osip *Client) Collect(ch chan<- prometheus.Metric) {
-	//Only allow one collect to run at a time
+	// Only allow one collect to run at a time
 	osip.Lock()
 	defer osip.Unlock()
 
@@ -23,7 +23,7 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 	osip.exportValueProfiles.Reset()
 	osip.insightProfiles.Reset()
 
-	//API Call to opensips to get list of profiles
+	// API Call to opensips to get list of profiles
 	profiles, err := osip.GetProfileList()
 
 	if err != nil {
@@ -37,7 +37,7 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 			if profile.HasValue {
 				// Fetch all values associated with the the profile
 				if vprofile, err := osip.GetProfileWithValues(profile.Name); err != nil {
-					//ProfileNotFound is safe to continue on
+					// ProfileNotFound is safe to continue on
 					//May be cause by a profile going away between us querying the list and checking
 					if !profileNotFound(err) {
 						log.Println(err)
@@ -45,7 +45,7 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 					}
 				} else {
 					for _, value := range vprofile {
-						//Is this an insight value?
+						// Is this an insight value?
 						if strings.HasPrefix(value.Value, osip.insightPrefix) {
 							osip.insightProfiles.SetWithStrLabels(profile.Name, strings.TrimSpace(value.Value[len(osip.insightPrefix):]), float64(value.Count))
 						} else {
@@ -53,7 +53,7 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 						}
 					}
 				}
-				//Non-Value dialogs
+				// Non-Value dialogs
 			} else {
 				if size, err := osip.GetProfileSize(profile.Name); err != nil {
 					if !profileNotFound(err) {

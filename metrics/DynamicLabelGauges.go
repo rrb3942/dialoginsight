@@ -8,13 +8,13 @@ import (
 
 // DynamicLabelGauges handles managing prometheus gauges with dynamic labels
 type DynamicLabelGauges struct {
-	//Fields used for creating new gauges
+	// Fields used for creating new gauges
 	namespace  string
 	metricName string
 	help       string
-	//Mapping of Labels.MapKeys() -> gauge
+	// Mapping of Labels.MapKeys() -> gauge
 	gauges map[string]*prometheus.GaugeVec
-	//Track which gauges are active
+	// Track which gauges are active
 	lastActive  map[string]time.Time
 	now         time.Time
 	idleCleanup time.Duration
@@ -34,10 +34,10 @@ func NewDynamicLabelGauges(namespace, metricName, help string, idleCleanup time.
 // All gauges should be reset before every collections
 // Try to reuse gauges where possible
 func (dyng *DynamicLabelGauges) Reset() {
-	//Reset current polling time
+	// Reset current polling time
 	dyng.now = time.Now()
 
-	//Remove idle and inactive namespaces
+	// Remove idle and inactive namespaces
 	for g, t := range dyng.lastActive {
 		if dyng.now.Sub(t) > dyng.idleCleanup {
 			delete(dyng.gauges, g)
@@ -45,7 +45,7 @@ func (dyng *DynamicLabelGauges) Reset() {
 		}
 	}
 
-	//Reset any active namespaces
+	// Reset any active namespaces
 	for _, g := range dyng.gauges {
 		g.Reset()
 	}
@@ -53,7 +53,7 @@ func (dyng *DynamicLabelGauges) Reset() {
 
 func (dyng *DynamicLabelGauges) Collect(ch chan<- prometheus.Metric) {
 	for k, t := range dyng.lastActive {
-		//Only return namespaces that were collected during this period
+		// Only return namespaces that were collected during this period
 		if t.Equal(dyng.now) {
 			if g, found := dyng.gauges[k]; found {
 				g.Collect(ch)

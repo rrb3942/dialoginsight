@@ -21,7 +21,7 @@ type Labels prometheus.Labels
 
 // Generate a key from the label keys that we can use for a map lookup
 func (l Labels) MapKey() string {
-	//Hangle empty maps with an empty string
+	// Hangle empty maps with an empty string
 	if len(l) == 0 {
 		return ""
 	}
