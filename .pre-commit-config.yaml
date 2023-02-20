@@ -1,0 +1,7 @@
+repos:
+-   repo: https://github.com/tekwizely/pre-commit-golang
+    rev: v1.0.0-rc.1
+    hooks:
+    -   id: go-fmt
+    -   id: golangci-lint
+    -   id: go-build-mod
