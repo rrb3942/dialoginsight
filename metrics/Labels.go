@@ -1,25 +1,26 @@
 package metrics
 
 import (
-	"github.com/carlmjohnson/bytemap"
-	"github.com/prometheus/client_golang/prometheus"
-	"golang.org/x/exp/maps"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/carlmjohnson/bytemap"
+	"github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/exp/maps"
 )
 
-// Prometheus labels can only contain these values
+// Prometheus labels can only contain these values.
 const promLabelStart = "abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ"
 const promLabelSet = promLabelStart + "_0123456789"
 
-// bytemap lets us easily check if a label only contains valid characters
+// bytemap lets us easily check if a label only contains valid characters.
 var labelSet = bytemap.Make(promLabelSet)
 
-// Extened prometheus.Labels
+// Extened prometheus.Labels.
 type Labels prometheus.Labels
 
-// Generate a key from the label keys that we can use for a map lookup
+// Generate a key from the label keys that we can use for a map lookup.
 func (l Labels) MapKey() string {
 	// Hangle empty maps with an empty string
 	if len(l) == 0 {
@@ -31,7 +32,7 @@ func (l Labels) MapKey() string {
 	return strings.Join(keys, ";")
 }
 
-// Parses a string in the format of 'label1=value;label2=value....' into prometheus label
+// Parses a string in the format of 'label1=value;label2=value....' into prometheus label.
 func NewLabelsFromString(lstr string) Labels {
 	labels := make(Labels)
 

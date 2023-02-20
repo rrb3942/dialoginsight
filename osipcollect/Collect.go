@@ -2,9 +2,10 @@ package osipcollect
 
 import (
 	"dialoginsight/metrics"
-	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"strings"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 )
 
 // Implement Promeheus Collector Interface
-// Collects and provides metrics
+// Collects and provides metrics.
 func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 	// Only allow one collect to run at a time
 	osip.Lock()
@@ -38,7 +39,7 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 				// Fetch all values associated with the the profile
 				if vprofile, err := osip.GetProfileWithValues(profile.Name); err != nil {
 					// ProfileNotFound is safe to continue on
-					//May be cause by a profile going away between us querying the list and checking
+					// May be cause by a profile going away between us querying the list and checking
 					if !profileNotFound(err) {
 						log.Println(err)
 						return
@@ -73,6 +74,6 @@ func (osip *Client) Collect(ch chan<- prometheus.Metric) {
 }
 
 // Implement Promeheus Collector Interface
-// Provides metric descriptions
+// Provides metric descriptions.
 func (osip *Client) Describe(ch chan<- *prometheus.Desc) {
 }

@@ -1,22 +1,20 @@
 package metrics
 
 import (
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/exp/maps"
-	"time"
 )
 
-// DynamicLabelGauges handles managing prometheus gauges with dynamic labels
+// DynamicLabelGauges handles managing prometheus gauges with dynamic labels.
 type DynamicLabelGauges struct {
-	// Fields used for creating new gauges
-	namespace  string
-	metricName string
-	help       string
-	// Mapping of Labels.MapKeys() -> gauge
-	gauges map[string]*prometheus.GaugeVec
-	// Track which gauges are active
-	lastActive  map[string]time.Time
 	now         time.Time
+	gauges      map[string]*prometheus.GaugeVec
+	lastActive  map[string]time.Time
+	namespace   string
+	metricName  string
+	help        string
 	idleCleanup time.Duration
 }
 
@@ -32,7 +30,7 @@ func NewDynamicLabelGauges(namespace, metricName, help string, idleCleanup time.
 }
 
 // All gauges should be reset before every collections
-// Try to reuse gauges where possible
+// Try to reuse gauges where possible.
 func (dyng *DynamicLabelGauges) Reset() {
 	// Reset current polling time
 	dyng.now = time.Now()
@@ -62,7 +60,7 @@ func (dyng *DynamicLabelGauges) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
-// Sets the value for a given label, creating the gauge if one does not yet exist for the label keys
+// Sets the value for a given label, creating the gauge if one does not yet exist for the label keys.
 func (dyng *DynamicLabelGauges) Set(labels Labels, value float64) {
 	mapKey := labels.MapKey()
 	g, found := dyng.gauges[mapKey]
@@ -76,7 +74,7 @@ func (dyng *DynamicLabelGauges) Set(labels Labels, value float64) {
 	dyng.lastActive[mapKey] = dyng.now
 }
 
-// Sets the value for a given label, creating the gauge if one does not yet exist for the label keys
+// Sets the value for a given label, creating the gauge if one does not yet exist for the label keys.
 func (dyng *DynamicLabelGauges) SetWithStrLabels(labelStr string, value float64) {
 	labels := NewLabelsFromString(labelStr)
 	dyng.Set(labels, value)

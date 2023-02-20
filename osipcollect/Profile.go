@@ -9,7 +9,7 @@ const (
 	errProfileNotFound = "Profile not found"
 )
 
-// Structs for deserializing opensips responses
+// Structs for deserializing opensips responses.
 type ProfileValue struct {
 	Value string `json:"value"`
 	Count int    `json:"count"`
@@ -25,7 +25,7 @@ type ProfileSize struct {
 }
 
 // API Call - profile_get_values
-// Returns slice containing all values and counts for a given profile
+// Returns slice containing all values and counts for a given profile.
 func (osip *Client) GetProfileWithValues(profile string) ([]ProfileValue, error) {
 	profiles := []ProfileValue{}
 
@@ -40,7 +40,7 @@ func (osip *Client) GetProfileWithValues(profile string) ([]ProfileValue, error)
 }
 
 // API Call - profile_get_size
-// Returns number of active dialogs in the given profile
+// Returns number of active dialogs in the given profile.
 func (osip *Client) GetProfileSize(profile string) (int, error) {
 	size := ProfileSizeWrapper{}
 

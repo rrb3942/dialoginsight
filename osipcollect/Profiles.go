@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-// Structs for deserializing API calls to opensips
+// Structs for deserializing API calls to opensips.
 type ProfilesWrapper struct {
 	Profiles []Profiles `json:"Profiles"`
 }
@@ -15,7 +15,7 @@ type Profiles struct {
 }
 
 // API Call - list_all_profiles
-// Returns a list of all profile names on a server
+// Returns a list of all profile names on a server.
 func (osip *Client) GetProfileList() ([]Profiles, error) {
 	profiles := ProfilesWrapper{}
 

@@ -1,22 +1,20 @@
 package metrics
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
-// DynamicGauges handles managing prometheus gauges with dynamic namespaces and labels
+// DynamicGauges handles managing prometheus gauges with dynamic namespaces and labels.
 type DynamicGauges struct {
-	// Fields used for creating new gauges
+	now             time.Time
+	namespaces      map[string]*DynamicLabelGauges
+	lastActive      map[string]time.Time
 	namespacePrefix string
 	metricName      string
 	help            string
-	// Mapping of namespaces -> dyanmiclabelgauges
-	namespaces map[string]*DynamicLabelGauges
-	// Track which namespaces are active
-	lastActive  map[string]time.Time
-	now         time.Time
-	idleCleanup time.Duration
+	idleCleanup     time.Duration
 }
 
 func NewDynamicGauges(namespacePrefix, metricName, help string, idleCleanup time.Duration) *DynamicGauges {
@@ -31,7 +29,7 @@ func NewDynamicGauges(namespacePrefix, metricName, help string, idleCleanup time
 }
 
 // All namespaces should be reset before every collections
-// Try to reuse namespaces where possible
+// Try to reuse namespaces where possible.
 func (dyng *DynamicGauges) Reset() {
 	// Reset current polling time
 	dyng.now = time.Now()
@@ -61,7 +59,7 @@ func (dyng *DynamicGauges) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
-// Sets the value for a given namespace and label, creating the namespace and gauge if one does not yet exist for the label keys
+// Sets the value for a given namespace and label, creating the namespace and gauge if one does not yet exist for the label keys.
 func (dyng *DynamicGauges) SetWithLabels(namespace string, labels Labels, value float64) {
 	g, found := dyng.namespaces[namespace]
 

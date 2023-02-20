@@ -3,22 +3,23 @@ package osipcollect
 import (
 	"context"
 	"dialoginsight/metrics"
-	"github.com/ethereum/go-ethereum/rpc"
 	"sync"
 	"time"
+
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type Client struct {
-	url                 string
-	insightPrefix       string
-	exportAll           bool
 	profilesToExport    map[string]bool
 	exportProfiles      *metrics.DynamicGauges
 	exportValueProfiles *metrics.DynamicGauges
 	insightProfiles     *metrics.DynamicGauges
 	rpc                 *rpc.Client
+	url                 string
+	insightPrefix       string
 	timeout             time.Duration
 	sync.Mutex
+	exportAll bool
 }
 
 func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (*Client, error) {
