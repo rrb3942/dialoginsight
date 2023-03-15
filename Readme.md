@@ -1,27 +1,29 @@
 # What is dialoginsight? #
-dialoginsight allows you to export dialog profiles from [OpenSIPs](https://opensips.org) as [Prometheus](https://prometheus.io/) style metrics.
+[dialoginsight](https://github.com/rrb3942/dialoginsight) allows you to export dynamic and detailed dialog profiles from [OpenSIPs](https://opensips.org) as [Prometheus](https://prometheus.io/) style metrics.
 
+### OpenSIPs Statistics ###
+This application does not export standard OpenSIPs statistics. If are looking to export OpenSIPs statistics it has been supported directly by the [prometheus](https://opensips.org/docs/modules/3.2.x/prometheus.html) module since version 3.2. For older versions you can use [opensips_exporter](https://github.com/VoIPGRID/opensips_exporter).
 ## Features ##
 * Supports OpenSIPs 3.2+ via the [mi_http](https://opensips.org/docs/modules/3.2.x/mi_http.html) module and JSON-RPC 2.0
 * Export all dialog profiles or only a specific list
-* Ability to use dynamic metric labels on the exported metrics from the OpenSIPs script.
+* Ability to use dynamic metric labels on exported metrics from the OpenSIPs script.
 
 # Configuration #
 Configuration is done via a json config file (typically /etc/dialogsight/config.json) or command line flags.
 
 ## Configuration Settings ##
 These may be used as command line flags or as fields in the json configuration.
-* `listen` - Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://ListenAddr/metrics (default "127.0.0.1:10337"
-* `opensips_mi` - URL to the mi_http instance for opensips. (default "http://127.0.0.1:8888/mi")
+* `listen` - Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://listen/metrics (default "127.0.0.1:10337")
+* `opensips_mi` - URL to the mi_http instance for OpenSIPs. (default "http://127.0.0.1:8888/mi")
 * `export_all` - Whether or not to export all dialog profiles from the instance. (default "true")
 * `export_profiles` - List of dialog profiles to export. Used if export_all is set to false.
 * `insight_label` - Dialog value starting prefix to indicate it is an insight value (contains labels to process). (default "insight")
-* `timeout` - Timeout duration for opensips API requests. (default "2s")
+* `timeout` - Timeout duration for OpenSIPs API requests. (default "2s")
 * `idle_remove` - If a metric is idle for this long it will be removed from memory. (default "1m")
-* `enable_profiling` - Enables access to profiling via http://ListenAddr/debug/pprof/ (default "false")
+* `enable_profiling` - Enables access to profiling via http://listen/debug/pprof/ (default "false")
 
 ## Additional Flags ##
-* `-config` - Allows specifying the configuration file to use.
+* `config` - Allows specifying the configuration file to use.
 
 # Exporting Dialog Profiles #
 ## Export Namespaces ##
@@ -45,7 +47,7 @@ Will be exported as:
 	dialoginsight_exported_profile_customer_dialogs{value="1234"} 1
 
 ## Insight ##
-Adding insight to the exported profiles allows you to increase visibility into active calls.
+Adding insight to the exported profiles allows you to set dynamic metric labels and increase visibility into active calls.
 
 ### Insight Values ###
 Insight values are profile values that start with `insight_label` followed by a `:` and a series of `label=value` pairs separated by `;`
@@ -59,7 +61,7 @@ Example format:
 
 	insight: cust=1234;carrier=4567;some_stat=5
 
-The format is very similar to a SIP header whos body contains only a list of parameters with values.
+The format is very similar to a SIP header whose body contains only a list of parameters with values.
 
 ### Adding Insight ###
 You can can add insight to existing dialog profiles, or use separate profiles.
@@ -72,7 +74,7 @@ Exports as:
 
 	dialoginsight_exported_profile_customer_dialogs{value="1234"} 1
 
-Lets add insight to track which source IPs the customer is sending from:
+Lets add insight to track which source IP the customer is sending from:
 
 	set_dlg_profile("customer", "1234")
 	set_dlg_profile("customer", "insight: cust=1234;scr_ip=$si")
@@ -99,3 +101,9 @@ One way to limit cardinality is to use less combinations of labels in a single m
 	set_dlg_profile("cust_called_state", "insight: cust=1234;called_state=NY")
 	set_dlg_profile("carrier_called_state", "insight: carrier=4567;called_state=NY")
 Our potential unique combinations is greatly reduced to 20,000 ((100\*100) + (100\*50) + (100\*50)). You lose granularity in exchange for reduced cardinality.
+
+## Issues or Pull Requests ##
+https://github.com/rrb3942/dialoginsight/issues
+
+# License #
+MIT
