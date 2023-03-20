@@ -107,3 +107,5 @@ https://github.com/rrb3942/dialoginsight/issues
 
 # License #
 MIT
+
+***Copyright (c) 2023 Ryan Bullock***
