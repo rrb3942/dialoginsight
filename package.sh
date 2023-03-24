@@ -1,19 +1,57 @@
 #/usr/bin/env bash
 set -e
 
-DATE=$(date +%Y%m%d)
+DATE=$(date -u)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 REVISION=$(git rev-parse --short HEAD)
+PROJECT="dialoginsight"
+VERSION="0.9"
+ARCH=$(dpkg --print-architecture)
+PACKAGING="packaging"
+BUILDDIR="build"
+BUILDNAME="${PROJECT}_${VERSION}-${ARCH}"
+BUILDROOT="${BUILDDIR}/${BUILDNAME}"
+BUILDBIN="${BUILDROOT}/usr/bin"
+BUILDETC="${BUILDROOT}/etc/dialoginsight"
+BUILDDOC="${BUILDROOT}/usr/share/doc/dialoginsight"
+BUILDMAN="${BUILDROOT}/usr/share/man/man1"
+BUILDINIT="${BUILDROOT}/usr/lib/systemd/system"
 
+echo "Cleaning ${BUILDDIR}"
+rm -rf ${BUILDDIR}
+echo "Making directories"
+mkdir -p ${BUILDDIR}
+mkdir -p ${BUILDROOT}
+mkdir -p ${BUILDBIN}
+mkdir -p ${BUILDETC}
+mkdir -p ${BUILDDOC}
+mkdir -p ${BUILDMAN}
+mkdir -p ${BUILDINIT}
 
-#Cleanup any leftover
-rm -rf dialoginsight_${BRANCH}_${DATE}_${REVISION}
-rm -f dialoginsight_${BRANCH}_${DATE}_${REVISION}.tar.gz
+echo "Copying debian packaging"
+cp -a ${PACKAGING}/DEBIAN ${BUILDROOT}/
+sed -i "s/VERSION_NUMBER_TOKEN/${VERSION}/g" ${BUILDROOT}/DEBIAN/control
+echo "Copying configuration files"
+cp ${PACKAGING}/config.json ${BUILDETC}/
+cp ${PACKAGING}/dialoginsight.service ${BUILDINIT}/
+echo "Copying documentation"
+cp Readme.md ${BUILDDOC}/
+cp LICENSE ${BUILDDOC}/
+pandoc --standalone --to man Readme.md | gzip --best > ${BUILDMAN}/dialoginsight.1.gz
+echo "Building binary"
+CGO_ENABLED=0 go build -ldflags "-w -s -X 'main.Version=${VERSION}' -X 'main.Built=${DATE}' -X 'main.Branch=${BRANCH}' -X 'main.Revision=${REVISION}' -X 'main.GoVer=$(go version)'" -o ${BUILDBIN}/${PROJECT}
+echo "Building .deb package"
+dpkg-deb --root-owner-group --build ${BUILDROOT}
 
-mkdir dialoginsight_${BRANCH}_${DATE}_${REVISION}
-cp -a packaging/* dialoginsight_${BRANCH}_${DATE}_${REVISION}/
-cp Readme.md dialoginsight_${BRANCH}_${DATE}_${REVISION}/
-CGO_ENABLED=0 go build -ldflags "-w -s" 
-mv dialoginsight dialoginsight_${BRANCH}_${DATE}_${REVISION}/
-tar -czf dialoginsight_${BRANCH}_${DATE}_${REVISION}.tar.gz dialoginsight_${BRANCH}_${DATE}_${REVISION}
-rm -rf dialoginsight_${BRANCH}_${DATE}_${REVISION}
+echo "Building simple tar package"
+cp ${PACKAGING}/install.sh ${BUILDROOT}/
+rm -rf ${BUILDROOT}/DEBIAN
+cd ${BUILDDIR}
+tar -czf "${BUILDNAME}.tar.gz" ${BUILDNAME}
+echo "${BUILDNAME}.tar.gz generated"
+
+echo "Converting .deb to .rpm (may prompt for sudo password)"
+sudo alien --script -r *.deb
+
+echo "Cleaning up ${BUILDROOT}"
+rm -rf ${BUILDNAME}

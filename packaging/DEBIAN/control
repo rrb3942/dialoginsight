@@ -1,0 +1,5 @@
+Package: dialoginsight
+Version: VERSION_NUMBER_TOKEN
+Architecture: amd64
+Maintainer: Ryan Bullock <rrb3942@gmail.com>
+Description: Dynamic prometheus exporter for OpenSIPs dialogs

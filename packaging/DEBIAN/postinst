@@ -1,0 +1,3 @@
+#/usr/bin/env bash
+adduser --system --quiet dialoginsight
+systemctl daemon-reload
