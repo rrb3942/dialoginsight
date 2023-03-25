@@ -50,8 +50,8 @@ cd ${BUILDDIR}
 tar -czf "${BUILDNAME}.tar.gz" ${BUILDNAME}
 echo "${BUILDNAME}.tar.gz generated"
 
-echo "Converting .deb to .rpm (may prompt for sudo password)"
-sudo alien --script -r *.deb
+echo "Converting .deb to .rpm"
+fpm -s deb -t rpm *.deb
 
 echo "Cleaning up ${BUILDROOT}"
 rm -rf ${BUILDNAME}
