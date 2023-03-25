@@ -51,7 +51,7 @@ tar -czf "${BUILDNAME}.tar.gz" ${BUILDNAME}
 echo "${BUILDNAME}.tar.gz generated"
 
 echo "Converting .deb to .rpm"
-fpm -s deb -t rpm *.deb
+fpm -s deb -t rpm --rpm-rpmbuild-define "_buildhost localhost" *.deb
 
 echo "Cleaning up ${BUILDROOT}"
 rm -rf ${BUILDNAME}
