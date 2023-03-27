@@ -41,7 +41,7 @@ chown root:root -R "${PREFIX}${DOC}"
 
 echo "Adding system user"
 set +e
-adduser --system dialoginsight --shell /sbin/nologin &> /dev/null
+useradd --system dialoginsight --no-create-home --home-dir /nonexistent --shell /sbin/nologin
 
 echo "Refreshing daemon list"
 systemctl daemon-reload
