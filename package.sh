@@ -39,7 +39,7 @@ cp Readme.md ${BUILDDOC}/
 cp LICENSE ${BUILDDOC}/
 pandoc --standalone --to man Readme.md | gzip --best > ${BUILDMAN}/dialoginsight.1.gz
 echo "Building binary"
-CGO_ENABLED=0 go build -ldflags "-w -s -X 'main.Version=${VERSION}' -X 'main.Built=${DATE}' -X 'main.Branch=${BRANCH}' -X 'main.Revision=${REVISION}' -X 'main.GoVer=$(go version)'" -o ${BUILDBIN}/${PROJECT}
+CGO_ENABLED=0 go build -ldflags "-w -s -X 'main.Version=${VERSION}' -X 'main.Built=${DATE}' -X 'main.Branch=${BRANCH}' -X 'main.Revision=${REVISION}' -X 'main.Compiler=$(go version)'" -o ${BUILDBIN}/${PROJECT}
 echo "Building .deb package"
 dpkg-deb --root-owner-group --build ${BUILDROOT}
 

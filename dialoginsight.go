@@ -19,7 +19,7 @@ var Version = "development"
 var Built string
 var Branch string
 var Revision string
-var GoVer string
+var Compiler string
 
 const (
 	signalBuffer = 10
@@ -37,7 +37,7 @@ type Config struct {
 }
 
 func main() {
-	log.Printf("Version: %v Built: %v Branch: %v Revision: %v GoVer: %v", Version, Built, Branch, Revision, GoVer)
+	log.Printf("Version: %v Built: %v Branch: %v Revision: %v Compiler: %v", Version, Built, Branch, Revision, Compiler)
 
 	var cfg Config
 	cfgLoader := aconfig.LoaderFor(&cfg, aconfig.Config{
