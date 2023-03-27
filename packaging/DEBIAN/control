@@ -2,6 +2,8 @@ Package: dialoginsight
 Version: VERSION_NUMBER_TOKEN
 Architecture: amd64
 License: MIT
+Priority: optional
+Section: net
 Homepage: https://github.com/rrb3942/dialoginsight
 Maintainer: Ryan Bullock <rrb3942@gmail.com>
 Description: Dynamic prometheus exporter for OpenSIPs dialogs
