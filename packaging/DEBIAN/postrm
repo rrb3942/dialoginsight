@@ -1,0 +1,12 @@
+#!/bin/sh
+systemctl daemon-reload > /dev/null 2>&1
+
+case "$1" in
+	upgrade|1)
+	;;
+	*)
+		systemctl is-active dialoginsight --quiet && systemctl is-enabled dialoginsight --quiet > /dev/null 2>&1 || systemctl stop dialoginsight --quiet > /dev/null 2>&1
+	;;
+esac
+
+exit 0
