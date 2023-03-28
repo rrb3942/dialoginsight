@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 PROJECT="dialoginsight"
@@ -41,7 +41,7 @@ chown root:root -R "${PREFIX}${DOC}"
 
 echo "Adding system user"
 set +e
-useradd --system dialoginsight --no-create-home --home-dir /nonexistent --shell /sbin/nologin
+useradd --system dialoginsight --no-create-home --home-dir /nonexistent --shell /sbin/nologin &> /dev/null
 
 echo "Refreshing daemon list"
 systemctl daemon-reload
