@@ -1,3 +1,5 @@
-#/usr/bin/env bash
-useradd --system dialoginsight --no-create-home --home-dir /nonexistent --shell /sbin/nologin
-systemctl daemon-reload
+#!/bin/sh
+useradd --system dialoginsight --no-create-home --home-dir /nonexistent --shell /sbin/nologin > /dev/null 2>&1
+systemctl daemon-reload > /dev/null 2>&1
+systemctl try-restart dialoginsight > /dev/null 2>&1
+exit 0
