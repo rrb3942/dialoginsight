@@ -9,7 +9,7 @@ This application does not export standard OpenSIPs statistics. If are looking to
 * Ability to use dynamic metric labels on exported metrics from the OpenSIPs script.
 
 # Configuration #
-Configuration is done via a json config file (typically /etc/dialogsight/config.json) or command line flags.
+Configuration is done via a json config file (typically /etc/dialoginsight/config.json) or command line flags.
 
 ## Configuration Settings ##
 These may be used as command line flags or as fields in the json configuration.
@@ -84,7 +84,7 @@ These will be exported as:
 	dialoginsight_profile_customer_dialogs{cust="1234",src_ip="192.168.168.1"} 1
 
 ### Notes on Cardinality ###
-`dialogsight` makes it very easy to create detailed views of your active call dialogs. However one pitfall that you should be aware of is high [cardinality](https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/). High cardinality can cause performance issues, both with exporting metrics and querying them. Therefore it is important to be mindful of how many potential metrics you may be exporting.
+`dialoginsight` makes it very easy to create detailed views of your active call dialogs. However one pitfall that you should be aware of is high [cardinality](https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/). High cardinality can cause performance issues, both with exporting metrics and querying them. Therefore it is important to be mindful of how many potential metrics you may be exporting.
 
 Lets take the example of:
 
