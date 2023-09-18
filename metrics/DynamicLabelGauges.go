@@ -77,7 +77,7 @@ func (dyng *DynamicLabelGauges) Set(labels Labels, value float64) {
 }
 
 // Sets the value for a given label, creating the gauge if one does not yet exist for the label keys.
-func (dyng *DynamicLabelGauges) SetWithStrLabels(labelStr string, value float64) {
-	labels := NewLabelsFromString(labelStr)
+func (dyng *DynamicLabelGauges) SetWithStrLabels(labelStr string, labels Labels, value float64) {
+	maps.Copy(labels, NewLabelsFromString(labelStr))
 	dyng.Set(labels, value)
 }

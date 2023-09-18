@@ -21,8 +21,10 @@ type ProfileSizeWrapper struct {
 }
 
 type ProfileSize struct {
-	Name  string `json:"name"`
-	Count int    `json:"count"`
+	Name       string `json:"name"`
+	Shared     string `json:"shared"`
+	Replicated string `json:"replicated"`
+	Count      int    `json:"count"`
 }
 
 // API Call - profile_get_values
@@ -42,17 +44,17 @@ func (osip *Client) GetProfileWithValues(profile string) ([]ProfileValue, error)
 
 // API Call - profile_get_size
 // Returns number of active dialogs in the given profile.
-func (osip *Client) GetProfileSize(profile string) (int, error) {
+func (osip *Client) GetProfileSize(profile string) (ProfileSize, error) {
 	size := ProfileSizeWrapper{}
 
 	ctx, cancel := context.WithTimeout(context.Background(), osip.timeout)
 	defer cancel()
 
 	if err := osip.rpc.CallContext(ctx, &size, "profile_get_size", profile); err != nil {
-		return 0, err
+		return size.Profile, err
 	}
 
-	return size.Profile.Count, nil
+	return size.Profile, nil
 }
 
 func profileNotFound(err error) bool {

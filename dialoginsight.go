@@ -26,14 +26,15 @@ const (
 )
 
 type Config struct {
-	ListenAddr      string        `default:"127.0.0.1:10337" usage:"Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://listen/metrics" flag:"listen" json:"listen"`
-	OpensipsMI      string        `default:"http://127.0.0.1:8888/mi" usage:"URL to the mi_http instance for opensips." flag:"opensips_mi" json:"opensips_mi"`
-	InsightLabel    string        `default:"insight" usage:"Dialog value starting prefix to indicate it is an insight value (contains labels to process)." flag:"insight_label" json:"insight_label"`
-	ExportProfiles  []string      `usage:"List of dialog profiles to export. Comma Separate. Used if export_all is set to false."`
-	Timeout         time.Duration `default:"2s" usage:"Timeout duration for opensips API requests."`
-	IdleRemove      time.Duration `default:"1m" usage:"If a metric is idle for this long it will be removed from memory."`
-	ExportAll       bool          `default:"true" usage:"Whether or not to export all dialog profiles from the instance." flag:"export_all" json:"export_all"`
-	EnableProfiling bool          `default:"false" usage:"Enables access to profiling via http://listen/debug/pprof/"`
+	ReplicationHints map[string][]string `usage:"Provide a mapping from OpenSIPs reported name to shared/replicated tagged names" flag:"replication_hints" json:"replication_hints"`
+	ListenAddr       string              `default:"127.0.0.1:10337" usage:"Local IP and port for the prometheus exporter to listen on. Metrics are exported under http://listen/metrics" flag:"listen" json:"listen"`
+	OpensipsMI       string              `default:"http://127.0.0.1:8888/mi" usage:"URL to the mi_http instance for opensips." flag:"opensips_mi" json:"opensips_mi"`
+	InsightLabel     string              `default:"insight" usage:"Dialog value starting prefix to indicate it is an insight value (contains labels to process)." flag:"insight_label" json:"insight_label"`
+	ExportProfiles   []string            `usage:"List of dialog profiles to export. Comma Separate. Used if export_all is set to false."`
+	Timeout          time.Duration       `default:"2s" usage:"Timeout duration for opensips API requests."`
+	IdleRemove       time.Duration       `default:"1m" usage:"If a metric is idle for this long it will be removed from memory."`
+	ExportAll        bool                `default:"true" usage:"Whether or not to export all dialog profiles from the instance." flag:"export_all" json:"export_all"`
+	EnableProfiling  bool                `default:"false" usage:"Enables access to profiling via http://listen/debug/pprof/"`
 }
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 
 	log.Printf("Starting with configuration: %+v", cfg)
 
-	osip, err := osipcollect.NewClient(cfg.OpensipsMI, cfg.InsightLabel, cfg.ExportProfiles, cfg.ExportAll, cfg.Timeout, cfg.IdleRemove)
+	osip, err := osipcollect.NewClient(cfg.OpensipsMI, cfg.InsightLabel, cfg.ExportProfiles, cfg.ReplicationHints, cfg.ExportAll, cfg.Timeout, cfg.IdleRemove)
 
 	if err != nil {
 		log.Fatal(err)

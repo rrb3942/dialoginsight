@@ -3,6 +3,7 @@ package osipcollect
 import (
 	"dialoginsight/metrics"
 	"log"
+	"maps"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -11,6 +12,7 @@ import (
 const (
 	exportNamespace  = "dialoginsight_exported_profile_"
 	insightNamespace = "dialoginsight_profile_"
+	yes              = "yes"
 )
 
 // Implement Promeheus Collector Interface
@@ -43,11 +45,42 @@ func (osip *Client) setProfiles() error {
 	}
 
 	for _, profile := range profiles {
-		if osip.exportAll || osip.profilesToExport[profile.Name] {
+		if !osip.exportAll && !osip.profilesToExport[profile.Name] {
+			continue
+		}
+
+		lookupNames, found := osip.replicationHints[profile.Name]
+
+		if !found {
+			lookupNames = []string{profile.Name}
+		}
+
+		for _, lookupName := range lookupNames {
+			// Fetch size for every profile, as this contains the name after tags as well as replication and shared info
+			size, err := osip.GetProfileSize(lookupName)
+
+			if err != nil {
+				if profileNotFound(err) {
+					continue
+				}
+
+				return err
+			}
+
+			replLabels := make(metrics.Labels)
+
+			if size.Shared == yes {
+				replLabels["shared"] = yes
+			}
+
+			if size.Replicated == yes {
+				replLabels["replicated"] = yes
+			}
+
 			// Dialog with values handling
 			if profile.HasValue {
 				// Fetch all values associated with the the profile
-				vprofile, err := osip.GetProfileWithValues(profile.Name)
+				vprofile, err := osip.GetProfileWithValues(lookupName)
 				if err != nil {
 					// ProfileNotFound is safe to continue on
 					// May be cause by a profile going away between us querying the list and checking
@@ -59,27 +92,25 @@ func (osip *Client) setProfiles() error {
 				}
 
 				for _, value := range vprofile {
+					labels := maps.Clone(replLabels)
+
 					// Is this an insight value?
 					if strings.HasPrefix(value.Value, osip.insightPrefix) {
-						osip.insightProfiles.SetWithStrLabels(profile.Name, strings.TrimSpace(value.Value[len(osip.insightPrefix):]), float64(value.Count))
+						osip.insightProfiles.SetWithStrLabels(size.Name, strings.TrimSpace(value.Value[len(osip.insightPrefix):]), labels, float64(value.Count))
 						continue
 					}
 
-					osip.exportValueProfiles.SetWithLabels(profile.Name, metrics.Labels{"value": value.Value}, float64(value.Count))
+					labels["value"] = value.Value
+
+					osip.exportValueProfiles.SetWithLabels(size.Name, labels, float64(value.Count))
 				}
 			} else {
 				// Non-Value dialogs
-				size, err := osip.GetProfileSize(profile.Name)
-
-				if err != nil {
-					if profileNotFound(err) {
-						continue
-					}
-
-					return err
+				if len(replLabels) > 0 {
+					osip.exportValueProfiles.SetWithLabels(size.Name, replLabels, float64(size.Count))
+				} else {
+					osip.exportProfiles.Set(size.Name, float64(size.Count))
 				}
-
-				osip.exportProfiles.Set(profile.Name, float64(size))
 			}
 		}
 	}
@@ -89,5 +120,5 @@ func (osip *Client) setProfiles() error {
 
 // Implement Promeheus Collector Interface
 // Provides metric descriptions.
-func (osip *Client) Describe(ch chan<- *prometheus.Desc) {
+func (osip *Client) Describe(_ chan<- *prometheus.Desc) {
 }

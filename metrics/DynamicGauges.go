@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"maps"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -78,6 +79,7 @@ func (dyng *DynamicGauges) Set(namespace string, value float64) {
 	dyng.SetWithLabels(namespace, nil, value)
 }
 
-func (dyng *DynamicGauges) SetWithStrLabels(namespace, strLabels string, value float64) {
-	dyng.SetWithLabels(namespace, NewLabelsFromString(strLabels), value)
+func (dyng *DynamicGauges) SetWithStrLabels(namespace, strLabels string, labels Labels, value float64) {
+	maps.Copy(labels, NewLabelsFromString(strLabels))
+	dyng.SetWithLabels(namespace, labels, value)
 }

@@ -11,6 +11,7 @@ import (
 
 type Client struct {
 	profilesToExport    map[string]bool
+	replicationHints    map[string][]string
 	exportProfiles      *metrics.DynamicGauges
 	exportValueProfiles *metrics.DynamicGauges
 	insightProfiles     *metrics.DynamicGauges
@@ -22,11 +23,12 @@ type Client struct {
 	exportAll           bool
 }
 
-func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
+func NewClient(url, insightPrefix string, exportProfiles []string, replicationHints map[string][]string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
 	client = new(Client)
 	client.url = url
 	client.insightPrefix = insightPrefix + ":"
 	client.timeout = timeout
+	client.replicationHints = replicationHints
 
 	client.exportProfiles = metrics.NewDynamicGauges(exportNamespace, "dialogs", "Exported dialog profiles", idleRemove)
 	client.exportValueProfiles = metrics.NewDynamicGauges(exportNamespace, "dialogs", "Exported dialog profiles with values", idleRemove)

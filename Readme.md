@@ -17,6 +17,7 @@ These may be used as command line flags or as fields in the json configuration.
 * `opensips_mi` - URL to the mi_http instance for OpenSIPs. (default "http://127.0.0.1:8888/mi")
 * `export_all` - Whether or not to export all dialog profiles from the instance. (default "true")
 * `export_profiles` - List of dialog profiles to export. Used if export_all is set to false.
+* `replication_hints` - Provide a mapping from OpenSIPs reported name to shared/replicated tagged names. (Example: { "sharedprofile": [ "sharedprofile/s", "sharedprofile/b" ] })
 * `insight_label` - Dialog value starting prefix to indicate it is an insight value (contains labels to process). (default "insight")
 * `timeout` - Timeout duration for OpenSIPs API requests. (default "2s")
 * `idle_remove` - If a metric is idle for this long it will be removed from memory. (default "1m")
@@ -45,6 +46,10 @@ Dialog profiles with values will be exported with a label of name 'value' contai
 Will be exported as:
 
 	dialoginsight_exported_profile_customer_dialogs{value="1234"} 1
+## Shared or Replicated Profiles ##
+Currently OpenSIPs reports the name of shared and/or replicated profiles without their tags, but the tags must be included in API calls for them to work correctly. To work around this the `replication_hints` configuration option is provided to allow remapping the reported name to names with the correct tags.
+
+When a profile indicates that it it shared or replicated we will automatically include the `shared` or `replicated` labels in the metric with the value of `yes`. If these labels overlap with `insight` labels, the `insight` labels will overwrite them.
 
 ## Insight ##
 Adding insight to the exported profiles allows you to set dynamic metric labels and increase visibility into active calls.
