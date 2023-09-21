@@ -78,7 +78,7 @@ func (osip *Client) setProfiles() error {
 			}
 
 			// Dialog with values handling
-			if profile.HasValue {
+			if profile.HasValue && size.Shared != yes {
 				// Fetch all values associated with the the profile
 				vprofile, err := osip.GetProfileWithValues(lookupName)
 				if err != nil {
@@ -105,7 +105,7 @@ func (osip *Client) setProfiles() error {
 					osip.exportValueProfiles.SetWithLabels(size.Name, labels, float64(value.Count))
 				}
 			} else {
-				// Non-Value dialogs
+				// Non-Value dialogs and shared profiles
 				if len(replLabels) > 0 {
 					osip.exportValueProfiles.SetWithLabels(size.Name, replLabels, float64(size.Count))
 				} else {
