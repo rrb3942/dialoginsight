@@ -23,21 +23,17 @@ type Client struct {
 	exportAll           bool
 }
 
-func NewClient(url, insightPrefix string, exportProfiles []string, replicationHints map[string][]string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
+func NewClient(url, insightPrefix string, exportProfiles []string, exportAll bool, timeout, idleRemove time.Duration) (client *Client, err error) {
 	client = new(Client)
 	client.url = url
 	client.insightPrefix = insightPrefix + ":"
 	client.timeout = timeout
-	client.replicationHints = replicationHints
 
 	client.exportProfiles = metrics.NewDynamicGauges(exportNamespace, "dialogs", "Exported dialog profiles", idleRemove)
 	client.exportValueProfiles = metrics.NewDynamicGauges(exportNamespace, "dialogs", "Exported dialog profiles with values", idleRemove)
 	client.insightProfiles = metrics.NewDynamicGauges(insightNamespace, "dialogs", "Insight dialogs with dynamic labels", idleRemove)
 
-	client.profilesToExport = make(map[string]bool)
-	for _, v := range exportProfiles {
-		client.profilesToExport[v] = true
-	}
+	client.profilesToExport, client.replicationHints = parseSharedTags(exportProfiles)
 
 	client.exportAll = exportAll
 
