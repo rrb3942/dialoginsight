@@ -5,7 +5,7 @@ repos:
     -   id: go-fmt
     -   id: go-build-mod
 -   repo: https://github.com/golangci/golangci-lint
-    rev: v1.54.1
+    rev: v1.58.1
     hooks:
     -   id: golangci-lint
         entry: golangci-lint run
