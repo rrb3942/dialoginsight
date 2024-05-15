@@ -38,7 +38,7 @@ func NewLabelsFromString(lstr string) Labels {
 	labels := make(Labels)
 
 	for _, tupleStr := range strings.Split(lstr, ";") {
-		if len(tupleStr) > 0 {
+		if tupleStr != "" {
 			if label, value, found := strings.Cut(strings.TrimSpace(tupleStr), "="); found {
 				// Skip labels that are not valid
 				// Labels follow the pattern [a-zA-Z_][a-zA-Z0-9_]*
